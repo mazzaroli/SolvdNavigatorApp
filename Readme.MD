@@ -157,9 +157,7 @@ SolvdNavigatorApp is a Java-based application designed to assist users in findin
 
 ### Example Commit Message
 ```
-Type of Change: Feature
-
-Title: Implement user authentication
+Feature: Implement user authentication
 
 Description:
 This feature enhances the system's security by implementing user authentication.
