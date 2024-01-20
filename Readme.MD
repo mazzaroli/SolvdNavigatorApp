@@ -177,6 +177,47 @@ Co-authored-by: John Doe <john@example.com>
 ```
 
 
+## Developer Workflow
+
+This project employs a branch-based workflow to organize and manage developer contributions. Follow the steps below to contribute to the project effectively.
+
+1. **Clone the Repository**
+   ```bash
+   git clone https://github.com/mazzaroli/SolvdNavigatorApp.git
+   cd SolvdNavigatorApp
+   ```
+
+2. **Create Your Branch**
+   Create a specific branch for your work. For example, if you are the developer "dev-juan," create a branch with that name.
+   ```bash
+   git checkout -b dev-(name)
+   ```
+
+3. **Develop and Commit Changes**
+   Make the necessary changes in your branch and commit them.
+   ```bash
+   git add .
+   git commit -m "Description of the made changes"
+   ```
+
+4. **Push the Branch to the Remote Repository**
+   Push your branch to the remote repository so others can view and collaborate on your work.
+   ```bash
+   git push origin dev-(name)
+   ```
+
+5. **Create a Pull Request**
+   From the GitHub web interface:
+   - Navigate to the main page of SolvdNavigatorApp on GitHub.
+   - Click on the "Pull requests" tab.
+   - Click on the "New pull request" button next to your branch.
+
+   From the command line (in your branch):
+   ```bash
+   git pull-request
+   ```
+   Note: The Product Owner will review and manage the merge of changes into the main branch.
+
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
