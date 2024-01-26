@@ -1,3 +1,41 @@
-<mapper xmlns="http://mybatis.org/schema/mybatis-mapper">
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.solvd.ConnectionMapper">
+
+    <resultMap id="connectionResult" type="Connection">
+        <id property="id" column="connection_id"/>
+        <result property="travelTime" column="travel_time"/>
+        <association property="originStation" javaType="Station">
+            <id property="id" column="origin_station_id"/>
+        </association>
+        <association property="destinationStation" javaType="Station">
+            <id property="id" column="destination_station_id"/>
+        </association>
+    </resultMap>
+
+    <select id="getConnection" resultMap="connectionResult">
+        SELECT c.connection_id, c.travel_time, c.origin_station_id,
+        c.destination_station_id
+        FROM connections c
+        WHERE c.connection_id = #{id}
+    </select>
+
+    <insert id="addConnection">
+        INSERT INTO connections (travel_time, origin_station_id, destination_station_id)
+        VALUES(#{travelTime}, #{originStation.id}, #{destinationStation.id})
+    </insert>
+
+    <update id="updateConnection">
+        UPDATE connections
+        SET travel_time=#{travelTime}
+        WHERE connection_id=#{id}
+    </update>
+
+    <delete id="deleteConnection">
+        DELETE FROM connections
+        WHERE connection_id = #{id}
+    </delete>
 
 </mapper>
