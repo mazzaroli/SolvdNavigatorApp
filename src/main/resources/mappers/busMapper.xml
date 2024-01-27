@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.solvd.BusMapper">
+
+    <resultMap id="busResult" type="Bus">
+        <id property="id" column="bus_id"/>
+        <result property="registrationNumber" column="registration_no"/>
+        <result property="numberOfSeats" column="no_of_seats"/>
+        <association property="route" javaType="Route">
+            <id property="id" column="route_id"/>
+            <result property="originStation" column="origin_station"/>
+            <result property="destinationStation" column="destination_station"/>
+        </association>
+    </resultMap>
+
+    <select id="getBusById" parameterType="int" resultMap="busResult">
+        SELECT b.bus_id, b.registration_no, b.no_of_seats, r.route_id,
+        r.origin_station, r.destination_station
+        FROM buses b
+        INNER JOIN routes r on b.route_id = r.route_id
+        WHERE b.bus_id = #{id}
+    </select>
+
+    <insert id="addBus" parameterType="Bus" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO buses(registration_no, no_of_seats, route_id)
+        VALUES(#{registrationNumber}, #{numberOfSeats}, #{route.id})
+    </insert>
+
+    <update id="updateBus" parameterType="Bus">
+        UPDATE buses
+        SET registration_no=#{registrationNumber},
+        no_of_seats=#{numberOfSeats},
+        route_id=#{route.id}
+        WHERE bus_id=#{id}
+    </update>
+
+    <delete id="deleteBus" parameterType="int">
+        DELETE FROM buses WHERE bus_id = #{id}
+    </delete>
+
+</mapper>

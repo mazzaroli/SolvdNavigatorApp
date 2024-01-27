@@ -1,3 +1,37 @@
-<mapper xmlns="http://mybatis.org/schema/mybatis-mapper">
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.company.StationMapper">
+
+    <resultMap id="stationResult" type="Station">
+        <id property="id" column="station_id"/>
+        <result property="name" column="name"/>
+        <result property="address" column="address"/>
+        <collection property="buses" javaType="ArrayList" ofType="Bus" >
+            <id property="id" column="bus_id"/>
+        </collection>
+    </resultMap>
+
+    <select id="getStationById" parameterType="int" resultMap="stationResult">
+        SELECT s.station_id, s.name, s.address, b.bus_id
+        FROM stations s
+        LEFT JOIN buses b ON s.station_id = b.station_id
+        WHERE s.station_id = #{id}
+    </select>
+
+    <insert id="addStation" parameterType="Station">
+        INSERT INTO stations (name, address)
+        VALUES(#{name}, #{address});
+    </insert>
+
+    <update id="updateStation" parameterType="Station">
+        UPDATE stations
+        SET name=#{name}, address=#{address}
+        WHERE station_id=#{id}
+    </update>
+
+    <delete id="deleteStation" parameterType="int">
+        DELETE FROM stations WHERE station_id = #{id}
+    </delete>
 
 </mapper>
