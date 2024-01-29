@@ -41,8 +41,16 @@ public class CarDAOImpl implements ICarDAO {
      */
     @Override
     public Car getEntityById(int id) {
-        carMapper = sqlSessionFactory.openSession().getMapper(ICarDAO.class);
-        return carMapper.getEntityById(id);
+        try{
+            carMapper = sqlSessionFactory.openSession().getMapper(ICarDAO.class);
+            return carMapper.getEntityById(id);
+        } catch (Exception e) {
+            sqlSession.rollback();
+            LOGGER.error("Error getting the car by id "+e);
+        }finally {
+            sqlSession.close();
+        }
+        return null;
     }
 
     /**
@@ -52,8 +60,16 @@ public class CarDAOImpl implements ICarDAO {
      */
     @Override
     public List<Car> getEntities() {
-        carMapper = sqlSessionFactory.openSession().getMapper(ICarDAO.class);
-        return carMapper.getEntities();
+        try{
+            carMapper = sqlSessionFactory.openSession().getMapper(ICarDAO.class);
+            return carMapper.getEntities();
+        } catch (Exception e) {
+            sqlSession.rollback();
+            LOGGER.error("Error getting all the cars "+e);
+        } finally {
+            sqlSession.close();
+        }
+        return null;
     }
 
     /**
@@ -67,6 +83,9 @@ public class CarDAOImpl implements ICarDAO {
             sqlSession = sqlSessionFactory.openSession();
             sqlSession.insert("insertEntity", entity);
             sqlSession.commit();
+        } catch (Exception e){
+            sqlSession.rollback();
+            LOGGER.error("Error saving the car "+e);
         } finally {
             sqlSession.close();
         }
@@ -83,6 +102,9 @@ public class CarDAOImpl implements ICarDAO {
             sqlSession = sqlSessionFactory.openSession();
             sqlSession.update("updateEntity", entity);
             sqlSession.commit();
+        } catch (Exception e){
+            sqlSession.rollback();
+            LOGGER.error("Error updating the car "+e);
         } finally {
             sqlSession.close();
         }
@@ -95,7 +117,12 @@ public class CarDAOImpl implements ICarDAO {
      */
     @Override
     public void removeEntity(Car entity) {
-        carMapper = sqlSessionFactory.openSession().getMapper(ICarDAO.class);
-        carMapper.removeEntity(entity);
+        try {
+            carMapper = sqlSessionFactory.openSession().getMapper(ICarDAO.class);
+            carMapper.removeEntity(entity);
+        } catch (Exception e) {
+            sqlSession.rollback();
+            LOGGER.error("Error removing the car "+e);
+        }
     }
 }
