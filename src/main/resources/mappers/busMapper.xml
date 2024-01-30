@@ -1,11 +1,11 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.solvd.database.dao.IBusDAO.java">
+<mapper namespace="com.solvd.database.dao.IBusDAO">
 
     <!-- Mapeo del resultado a la clase Bus -->
     <resultMap id="BusResultMap" type="com.solvd.database.model.Bus">
         <id property="id" column="id"/>
-        <result property="lineName" column="lineName"/>
+        <result property="lineName" column="line_name"/>
     </resultMap>
 
     <!-- Consulta para obtener todos los buses -->
@@ -14,20 +14,20 @@
     </select>
 
     <!-- Consulta para obtener un bus por ID -->
-    <select id="getBusById" parameterType="int" resultMap="BusResultMap">
+    <select id="getEntityById" parameterType="int" resultMap="BusResultMap">
         SELECT * FROM Buses WHERE id = #{id}
     </select>
 
     <!-- Consulta para insertar un nuevo bus -->
     <insert id="insertBus" parameterType="com.solvd.database.model.Bus">
-        INSERT INTO Buses (id, lineName)
+        INSERT INTO Buses (id, line_name)
         VALUES (#{id}, #{lineName})
     </insert>
 
     <!-- Consulta para actualizar un bus -->
     <update id="updateBus" parameterType="com.solvd.database.model.Bus">
         UPDATE Buses
-        SET lineName = #{lineName}
+        SET line_Name = #{lineName}
         WHERE id = #{id}
     </update>
 
