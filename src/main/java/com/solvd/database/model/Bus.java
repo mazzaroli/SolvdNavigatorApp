@@ -1,9 +1,30 @@
 package com.solvd.database.model;
 
 public class Bus {
-//    manana
-//    hacer test json
-//    hacer test jaxb
+    private Integer id;
+    private String lineName;
 
-// y despues me borro ig por un mes
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getLineName() {
+        return lineName;
+    }
+
+    public void setLineName(String lineName) {
+        this.lineName = lineName;
+    }
+
+    @Override
+    public String toString() {
+        return "Bus{" +
+                "id=" + id +
+                ", lineName='" + lineName + '\'' +
+                '}';
+    }
 }
