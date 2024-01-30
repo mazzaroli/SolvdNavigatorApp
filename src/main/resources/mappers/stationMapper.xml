@@ -1,13 +1,13 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.solvd.database.dao.IStationDAO.java">
+<mapper namespace="com.solvd.database.dao.IStationDAO">
 
     <!-- Result mapping for the Station class -->
     <resultMap id="StationResultMap" type="com.solvd.database.model.Station">
         <id property="id" column="id"/>
-        <result property="name" column="name"/>
-        <result property="coordinateX" column="coordinateX"/>
-        <result property="coordinateY" column="coordinateY"/>
+        <result property="name" column="station_name"/>
+        <result property="coordinateX" column="coordinate_x"/>
+        <result property="coordinateY" column="coordinate_y"/>
     </resultMap>
 
     <!-- Select query to retrieve all stations -->
@@ -16,22 +16,22 @@
     </select>
 
     <!-- Select query to retrieve a station by ID -->
-    <select id="getStationById" parameterType="int" resultMap="StationResultMap">
+    <select id="getEntityById" parameterType="int" resultMap="StationResultMap">
         SELECT * FROM Stations WHERE id = #{id}
     </select>
 
     <!-- Insert query to add a new station -->
     <insert id="insertStation" parameterType="com.solvd.database.model.Station">
-        INSERT INTO Stations (id, name, coordinateX, coordinateY)
+        INSERT INTO Stations (id, station_name, coordinate_x, coordinate_y)
         VALUES (#{id}, #{name}, #{coordinateX}, #{coordinateY})
     </insert>
 
     <!-- Update query to modify a station -->
     <update id="updateStation" parameterType="com.solvd.database.model.Station">
         UPDATE Stations
-        SET name = #{name},
-        coordinateX = #{coordinateX},
-        coordinateY = #{coordinateY}
+        SET station_name = #{name},
+        coordinate_x = #{coordinateX},
+        coordinate_y = #{coordinateY}
         WHERE id = #{id}
     </update>
 
