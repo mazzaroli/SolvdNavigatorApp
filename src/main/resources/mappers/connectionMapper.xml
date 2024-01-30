@@ -1,39 +1,39 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.solvd.database.dao.IConnectionDAO.java">
+<mapper namespace="com.solvd.database.dao.IConnectionDAO">
 
-    <!-- Result mapping for the Connection class -->
+    <!-- Mapping the result to the Connection class -->
     <resultMap id="ConnectionResultMap" type="com.solvd.database.model.Connection">
         <id property="id" column="id"/>
-        <result property="originStationId" column="id_origin_station"/>
-        <result property="destinationStationId" column="id_destination_station"/>
+        <result property="originStationId" column="origin_station_id"/>
+        <result property="destinationStationId" column="destination_station_id"/>
     </resultMap>
 
-    <!-- Select query to retrieve all connections -->
-    <select id="getAllConnections" resultMap="ConnectionResultMap">
+    <!-- Query to retrieve all connections -->
+    <select id="getAllConnection" resultMap="ConnectionResultMap">
         SELECT * FROM Connections
     </select>
 
-    <!-- Select query to retrieve a connection by ID -->
-    <select id="getConnectionById" parameterType="int" resultMap="ConnectionResultMap">
+    <!-- Query to retrieve a connection by ID -->
+    <select id="getEntityById" parameterType="int" resultMap="ConnectionResultMap">
         SELECT * FROM Connections WHERE id = #{id}
     </select>
 
-    <!-- Insert query to add a new connection -->
+    <!-- Query to insert a new connection -->
     <insert id="insertConnection" parameterType="com.solvd.database.model.Connection">
-        INSERT INTO Connections (id, id_origin_station, id_destination_station)
-        VALUES (#{id}, #{originStationId}, #{destinationStationId})
+        INSERT INTO Connections (origin_station_id, destination_station_id)
+        VALUES (#{originStationId}, #{destinationStationId})
     </insert>
 
-    <!-- Update query to modify a connection -->
+    <!-- Query to update a connection -->
     <update id="updateConnection" parameterType="com.solvd.database.model.Connection">
         UPDATE Connections
-        SET id_origin_station = #{originStationId},
-        id_destination_station = #{destinationStationId}
+        SET origin_station_id = #{originStationId},
+        destination_station_id = #{destinationStationId}
         WHERE id = #{id}
     </update>
 
-    <!-- Delete query to remove a connection by ID -->
+    <!-- Query to delete a connection by ID -->
     <delete id="deleteConnection" parameterType="int">
         DELETE FROM Connections WHERE id = #{id}
     </delete>
