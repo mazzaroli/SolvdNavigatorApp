@@ -38,16 +38,8 @@ public class ConnectionDAOImpl implements IConnectionDAO {
      */
     @Override
     public Connection getEntityById(int id) {
-        try {
-            connectionMapper = sqlSessionFactory.openSession().getMapper(IConnectionDAO.class);
-            return connectionMapper.getEntityById(id);
-        } catch (Exception e) {
-            sqlSession.rollback();
-            LOGGER.error("Error getting the connection by id " + e);
-        } finally {
-            sqlSession.close();
-        }
-        return null;
+        connectionMapper = sqlSessionFactory.openSession().getMapper(IConnectionDAO.class);
+        return connectionMapper.getEntityById(id);
     }
 
     /**
@@ -57,16 +49,14 @@ public class ConnectionDAOImpl implements IConnectionDAO {
      */
     @Override
     public List<Connection> getEntities() {
+        List<Connection> connection;
         try {
-            connectionMapper = sqlSessionFactory.openSession().getMapper(IConnectionDAO.class);
-            return connectionMapper.getEntities();
-        } catch (Exception e) {
-            sqlSession.rollback();
-            LOGGER.error("Error getting all the connections " + e);
+            sqlSession = sqlSessionFactory.openSession();
+            connection = sqlSession.selectList("getAllConnection");
         } finally {
             sqlSession.close();
         }
-        return null;
+        return connection;
     }
 
     /**
@@ -78,9 +68,9 @@ public class ConnectionDAOImpl implements IConnectionDAO {
     public void saveEntity(Connection entity) {
         try {
             sqlSession = sqlSessionFactory.openSession();
-            sqlSession.insert("insertEntity", entity);
+            sqlSession.insert("insertConnection", entity);
             sqlSession.commit();
-        } catch (Exception e) {
+        } catch (Exception e){
             sqlSession.rollback();
             LOGGER.error("Error saving the connection " + e);
         } finally {
@@ -97,9 +87,9 @@ public class ConnectionDAOImpl implements IConnectionDAO {
     public void updateEntity(Connection entity) {
         try {
             sqlSession = sqlSessionFactory.openSession();
-            sqlSession.update("updateEntity", entity);
+            sqlSession.update("updateConnection", entity);
             sqlSession.commit();
-        } catch (Exception e) {
+        } catch (Exception e){
             sqlSession.rollback();
             LOGGER.error("Error updating the connection " + e);
         } finally {
@@ -115,11 +105,9 @@ public class ConnectionDAOImpl implements IConnectionDAO {
     @Override
     public void removeEntity(Connection entity) {
         try {
-            connectionMapper = sqlSessionFactory.openSession().getMapper(IConnectionDAO.class);
-            connectionMapper.removeEntity(entity);
-        } catch (Exception e) {
-            sqlSession.rollback();
-            LOGGER.error("Error removing the connection " + e);
+            sqlSession = sqlSessionFactory.openSession();
+            sqlSession.delete("deleteConnection", entity);
+            sqlSession.commit();
         } finally {
             sqlSession.close();
         }
