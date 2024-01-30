@@ -38,16 +38,8 @@ public class BusDAOImpl implements IBusDAO {
      */
     @Override
     public Bus getEntityById(int id) {
-        try{
-            busMapper = sqlSessionFactory.openSession().getMapper(IBusDAO.class);
-            return busMapper.getEntityById(id);
-        } catch (Exception e) {
-            sqlSession.rollback();
-            LOGGER.error("Error getting the bus by id "+e);
-        }finally {
-            sqlSession.close();
-        }
-        return null;
+        busMapper = sqlSessionFactory.openSession().getMapper(IBusDAO.class);
+        return busMapper.getEntityById(id);
     }
 
     /**
@@ -57,16 +49,14 @@ public class BusDAOImpl implements IBusDAO {
      */
     @Override
     public List<Bus> getEntities() {
-        try{
-            busMapper = sqlSessionFactory.openSession().getMapper(IBusDAO.class);
-            return busMapper.getEntities();
-        } catch (Exception e) {
-            sqlSession.rollback();
-            LOGGER.error("Error getting all the buses "+e);
-        }finally {
+        List<Bus> bus;
+        try {
+            sqlSession = sqlSessionFactory.openSession();
+            bus = sqlSession.selectList("getAllBuses"); // Cambiado a showAllCpus para reflejar CPUs
+        } finally {
             sqlSession.close();
         }
-        return null;
+        return bus;
     }
 
     /**
@@ -78,7 +68,7 @@ public class BusDAOImpl implements IBusDAO {
     public void saveEntity(Bus entity) {
         try {
             sqlSession = sqlSessionFactory.openSession();
-            sqlSession.insert("insertEntity", entity);
+            sqlSession.insert("insertBus", entity);
             sqlSession.commit();
         } catch (Exception e){
             sqlSession.rollback();
@@ -97,7 +87,7 @@ public class BusDAOImpl implements IBusDAO {
     public void updateEntity(Bus entity) {
         try {
             sqlSession = sqlSessionFactory.openSession();
-            sqlSession.update("updateEntity", entity);
+            sqlSession.update("updateBus", entity);
             sqlSession.commit();
         } catch (Exception e){
             sqlSession.rollback();
@@ -115,11 +105,11 @@ public class BusDAOImpl implements IBusDAO {
     @Override
     public void removeEntity(Bus entity) {
         try {
-            busMapper = sqlSessionFactory.openSession().getMapper(IBusDAO.class);
-            busMapper.removeEntity(entity);
-        } catch (Exception e) {
-            sqlSession.rollback();
-            LOGGER.error("Error removing the bus "+e);
+            sqlSession = sqlSessionFactory.openSession();
+            sqlSession.delete("deleteBus", entity);
+            sqlSession.commit();
+        } finally {
+            sqlSession.close();
         }
     }
 }
