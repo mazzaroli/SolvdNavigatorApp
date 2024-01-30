@@ -1,37 +1,37 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.solvd.database.dao.IRouteDAO.java">
+<mapper namespace="com.solvd.database.dao.IRouteDAO">
 
-    <!-- Mapeo del resultado a la clase Route -->
-    <resultMap id="RouteResultMap" type="com.solvd.database.model.Route">
+    <!-- Mapeo del resultado a la clase Routes -->
+    <resultMap id="RoutesResultMap" type="com.solvd.database.model.Route">
         <id property="id" column="id"/>
-        <result property="busId" column="id_bus"/>
+        <result property="busId" column="bus_id"/>
         <result property="routeOrder" column="route_order"/>
-        <result property="stationId" column="id_station"/>
+        <result property="stationId" column="station_id"/>
     </resultMap>
 
     <!-- Consulta para obtener todas las rutas -->
-    <select id="getAllRoutes" resultMap="RouteResultMap">
+    <select id="getAllRoutes" resultMap="RoutesResultMap">
         SELECT * FROM Routes
     </select>
 
     <!-- Consulta para obtener una ruta por ID -->
-    <select id="getRouteById" parameterType="int" resultMap="RouteResultMap">
+    <select id="getEntityById" parameterType="int" resultMap="RoutesResultMap">
         SELECT * FROM Routes WHERE id = #{id}
     </select>
 
     <!-- Consulta para insertar una nueva ruta -->
     <insert id="insertRoute" parameterType="com.solvd.database.model.Route">
-        INSERT INTO Routes (id, id_bus, route_order, id_station)
-        VALUES (#{id}, #{busId}, #{routeOrder}, #{stationId})
+        INSERT INTO Routes (bus_id, route_order, station_id)
+        VALUES (#{busId}, #{routeOrder}, #{stationId})
     </insert>
 
     <!-- Consulta para actualizar una ruta -->
     <update id="updateRoute" parameterType="com.solvd.database.model.Route">
         UPDATE Routes
-        SET id_bus = #{busId},
+        SET bus_id = #{busId},
         route_order = #{routeOrder},
-        id_station = #{stationId}
+        station_id = #{stationId}
         WHERE id = #{id}
     </update>
 
