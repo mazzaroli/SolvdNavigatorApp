@@ -38,16 +38,8 @@ public class StationDAOImpl implements IStationDAO {
      */
     @Override
     public Station getEntityById(int id) {
-        try {
-            stationMapper = sqlSessionFactory.openSession().getMapper(IStationDAO.class);
-            return stationMapper.getEntityById(id);
-        } catch (Exception e) {
-            sqlSession.rollback();
-            LOGGER.error("Error getting the station by id " + e);
-        } finally {
-            sqlSession.close();
-        }
-        return null;
+        stationMapper = sqlSessionFactory.openSession().getMapper(IStationDAO.class);
+        return stationMapper.getEntityById(id);
     }
 
     /**
@@ -57,16 +49,14 @@ public class StationDAOImpl implements IStationDAO {
      */
     @Override
     public List<Station> getEntities() {
+        List<Station> stations;
         try {
-            stationMapper = sqlSessionFactory.openSession().getMapper(IStationDAO.class);
-            return stationMapper.getEntities();
-        } catch (Exception e) {
-            sqlSession.rollback();
-            LOGGER.error("Error getting all the stations " + e);
+            sqlSession = sqlSessionFactory.openSession();
+            stations = sqlSession.selectList("getAllStations");
         } finally {
             sqlSession.close();
         }
-        return null;
+        return stations;
     }
 
     /**
@@ -78,9 +68,9 @@ public class StationDAOImpl implements IStationDAO {
     public void saveEntity(Station entity) {
         try {
             sqlSession = sqlSessionFactory.openSession();
-            sqlSession.insert("insertEntity", entity);
+            sqlSession.insert("insertStation", entity);
             sqlSession.commit();
-        } catch (Exception e) {
+        } catch (Exception e){
             sqlSession.rollback();
             LOGGER.error("Error saving the station " + e);
         } finally {
@@ -97,9 +87,9 @@ public class StationDAOImpl implements IStationDAO {
     public void updateEntity(Station entity) {
         try {
             sqlSession = sqlSessionFactory.openSession();
-            sqlSession.update("updateEntity", entity);
+            sqlSession.update("updateStation", entity);
             sqlSession.commit();
-        } catch (Exception e) {
+        } catch (Exception e){
             sqlSession.rollback();
             LOGGER.error("Error updating the station " + e);
         } finally {
@@ -115,11 +105,9 @@ public class StationDAOImpl implements IStationDAO {
     @Override
     public void removeEntity(Station entity) {
         try {
-            stationMapper = sqlSessionFactory.openSession().getMapper(IStationDAO.class);
-            stationMapper.removeEntity(entity);
-        } catch (Exception e) {
-            sqlSession.rollback();
-            LOGGER.error("Error removing the station " + e);
+            sqlSession = sqlSessionFactory.openSession();
+            sqlSession.delete("deleteStation", entity);
+            sqlSession.commit();
         } finally {
             sqlSession.close();
         }
