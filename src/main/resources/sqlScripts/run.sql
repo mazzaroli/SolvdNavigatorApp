@@ -1,6 +1,10 @@
+SET FOREIGN_KEY_CHECKS=0;
+
+-- Assuming navigator is the name of your database
+USE navigator;
 
 -- Insert data into Stations table
-INSERT INTO navigator.Stations (id, name, coordinateX, coordinateY)
+INSERT INTO navigator.Stations (id, station_name, coordinate_x, coordinate_y)
 VALUES
     (1, 'Shell Station Buenos Aires', -34.615852, -58.417758),
     (2, 'A3C M6, Voložin', 53.899161, 27.566893),
@@ -11,7 +15,7 @@ VALUES
     (7, 'Shell Station Cordoba', -31.431256, -64.193020);
 
 -- Insert data into Connections table
-INSERT INTO navigator.Connections (id, id_origin_station, id_destination_station)
+INSERT INTO navigator.Connections (id, origin_station_id, destination_station_id)
 VALUES
     (1, 1, 2),
     (2, 2, 3),
@@ -24,22 +28,16 @@ VALUES
     (9, 6, 7),
     (10, 7, 4);
 
-    
-    
 -- Insert data into Buses table
-INSERT INTO navigator.Buses (id, lineName)
+INSERT INTO navigator.Buses (id, line_name)
 VALUES
-(1, 'BusLine1'),
-(2, 'BusLine2'),
-(3, 'BusLine3'),
-(4, 'Busline4');
+    (1, 'BusLine1'),
+    (2, 'BusLine2'),
+    (3, 'BusLine3'),
+    (4, 'Busline4');
 
-
--- Assuming navigator is the name of your database
-USE navigator;
-
--- Insert into Routes
-INSERT INTO Routes (id, id_bus, route_order, id_station)
+-- Insert data into Routes table
+INSERT INTO Routes (id, bus_id, route_order, station_id)
 VALUES
     (1, 1, 1, 1),
     (2, 1, 2, 2),
