@@ -17,7 +17,6 @@
     </environments>
     <mappers>
         <mapper resource="mappers/busMapper.xml"/>
-        <mapper resource="mappers/routeMapper.xml"/>
         <mapper resource="mappers/stationMapper.xml"/>
         <mapper resource="mappers/connectionMapper.xml"/>
     </mappers>
