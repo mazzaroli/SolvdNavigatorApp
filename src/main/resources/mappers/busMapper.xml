@@ -6,6 +6,7 @@
     <resultMap id="BusResultMap" type="com.solvd.database.model.Bus">
         <id property="id" column="id"/>
         <result property="lineName" column="line_name"/>
+        <result property="conexionId" column="conexion_id"/>
     </resultMap>
 
     <!-- Consulta para obtener todos los buses -->
@@ -20,14 +21,14 @@
 
     <!-- Consulta para insertar un nuevo bus -->
     <insert id="insertBus" parameterType="com.solvd.database.model.Bus">
-        INSERT INTO Buses (id, line_name)
-        VALUES (#{id}, #{lineName})
+        INSERT INTO Buses (id, line_name, conexion_id)
+        VALUES (#{id}, #{lineName}, #{conexionId})
     </insert>
 
     <!-- Consulta para actualizar un bus -->
     <update id="updateBus" parameterType="com.solvd.database.model.Bus">
         UPDATE Buses
-        SET line_Name = #{lineName}
+        SET line_name = #{lineName}, conexion_id = #{conexionId}
         WHERE id = #{id}
     </update>
 
