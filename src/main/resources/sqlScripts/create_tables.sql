@@ -19,18 +19,10 @@ CREATE TABLE Connections (
     FOREIGN KEY (destination_station_id) REFERENCES Stations(id)
 );
 
--- Buses Table
+-- Buses Table with conexion_id
 CREATE TABLE Buses (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    line_name VARCHAR(255) NOT NULL
-);
-
--- Routes Table with CASCADE DELETE
-CREATE TABLE Routes (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    bus_id INT,
-    route_order INT NOT NULL,
-    station_id INT,
-    FOREIGN KEY (bus_id) REFERENCES Buses(id) ON DELETE CASCADE,
-    FOREIGN KEY (station_id) REFERENCES Stations(id)
+    line_name VARCHAR(255) NOT NULL,
+    conexion_id INT,
+    FOREIGN KEY (conexion_id) REFERENCES Connections(id)
 );
