@@ -62,78 +62,6 @@ public class FloydWarshall {
     }
 
     /**
-     * Initializes the graph with infinite distances and no connections between stations.
-     * Then, assigns distances and connections based on the provided data.
-     */
-    private void initializeGraph() {
-        int numStations = stations.size();
-        distance = new double[numStations][numStations];
-        next = new int[numStations][numStations];
-
-        for (int i = 0; i < numStations; i++) {
-            for (int j = 0; j < numStations; j++) {
-                distance[i][j] = INF;
-                next[i][j] = -1;
-            }
-        }
-
-        for (Connection connection : connections) {
-            int i = connection.getOriginStationId() - 1;
-            int j = connection.getDestinationStationId() - 1;
-
-            distance[i][j] = calculateDistance(stations.get(i), stations.get(j));
-            next[i][j] = j;
-        }
-
-        for (int i = 0; i < numStations; i++) {
-            distance[i][i] = 0;
-            next[i][i] = i;
-        }
-    }
-
-    /**
-     * Calculates the distance in kilometers between two stations using the formula for
-     * Euclidean distance on a spherical plane.
-     *
-     * @param station1 First station.
-     * @param station2 Second station.
-     * @return Distance in kilometers between the two stations.
-     */
-    private double calculateDistance(Station station1, Station station2) {
-        double earthRadius = 6371.0; // Earth radius in kilometers
-        double lat1 = Math.toRadians(station1.getCoordinateX());
-        double lon1 = Math.toRadians(station1.getCoordinateY());
-        double lat2 = Math.toRadians(station2.getCoordinateX());
-        double lon2 = Math.toRadians(station2.getCoordinateY());
-
-        double dLat = lat2 - lat1;
-        double dLon = lon2 - lon1;
-
-        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                Math.cos(lat1) * Math.cos(lat2) *
-                        Math.sin(dLon / 2) * Math.sin(dLon / 2);
-
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-        return earthRadius * c;
-    }
-
-    /**
-     * Gets the bus ID based on the connection ID.
-     *
-     * @param busId ID of the connection.
-     * @return Bus ID or -1 if not found.
-     */
-    private Bus getBusById(int busId) {
-        for (Bus bus : buses) {
-            if (bus.getId() == busId) {
-                return bus;
-            }
-        }
-        return null;
-    }
-
-    /**
      * Runs the algorithm for car travel and prints the results.
      *
      * @param startIdx Index of the starting station.
@@ -224,24 +152,128 @@ public class FloydWarshall {
     }
 
     /**
+     * Initializes the graph with infinite distances and no connections between stations.
+     * Then, assigns distances and connections based on the provided data.
+     */
+    private void initializeGraph() {
+        // Get the number of stations
+        int numStations = stations.size();
+
+        // Initialize distance matrix with infinite distances and next matrix with -1 values
+        distance = new double[numStations][numStations];
+        next = new int[numStations][numStations];
+
+        // Initialize matrices with default values
+        for (int i = 0; i < numStations; i++) {
+            for (int j = 0; j < numStations; j++) {
+                // Set initial distance to infinity
+                distance[i][j] = INF;
+                // Set initial next node to -1
+                next[i][j] = -1;
+            }
+        }
+
+        // Assign distances and next nodes based on provided connections
+        for (Connection connection : connections) {
+            int i = connection.getOriginStationId() - 1;
+            int j = connection.getDestinationStationId() - 1;
+
+            // Calculate and set the distance between stations using Euclidean distance
+            distance[i][j] = calculateDistance(stations.get(i), stations.get(j));
+            // Set the next node for the current station to the destination station
+            next[i][j] = j;
+        }
+
+        // Set distance from a station to itself to 0 and next node to itself
+        for (int i = 0; i < numStations; i++) {
+            distance[i][i] = 0;
+            next[i][i] = i;
+        }
+    }
+
+    /**
+     * Calculates the distance in kilometers between two stations using the formula for
+     * Euclidean distance on a spherical plane.
+     *
+     * @param station1 First station.
+     * @param station2 Second station.
+     * @return Distance in kilometers between the two stations.
+     */
+    private double calculateDistance(Station station1, Station station2) {
+        // Earth radius in kilometers
+        double earthRadius = 6371.0;
+
+        // Convert latitude and longitude from degrees to radians
+        double lat1 = Math.toRadians(station1.getCoordinateX());
+        double lon1 = Math.toRadians(station1.getCoordinateY());
+        double lat2 = Math.toRadians(station2.getCoordinateX());
+        double lon2 = Math.toRadians(station2.getCoordinateY());
+
+        // Calculate differences in latitude and longitude
+        double dLat = lat2 - lat1;
+        double dLon = lon2 - lon1;
+
+        // Haversine formula for calculating distance on a sphere
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(lat1) * Math.cos(lat2) *
+                        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
+        // Angular distance in radians
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+        // Calculate actual distance by multiplying with Earth's radius
+        return earthRadius * c;
+    }
+
+    /**
+     * Gets the bus ID based on the connection ID.
+     *
+     * @param busId ID of the connection.
+     * @return Bus ID or -1 if not found.
+     */
+    private Bus getBusById(int busId) {
+        // Iterate through the list of buses
+        for (Bus bus : buses) {
+            // Check if the current bus has the matching ID
+            if (bus.getId() == busId) {
+                // Return the Bus object with the specified ID
+                return bus;
+            }
+        }
+        // Return null if no matching Bus object is found
+        return null;
+    }
+
+
+
+    /**
      * Prints the bus information for a direct connection.
      *
      * @param startIdx Index of the starting station.
      * @param endIdx   Index of the destination station.
      */
     private void printBusesForConnection(int startIdx, int endIdx) {
+        // Find the direct bus connection between the specified stations
         Connection busConnection = findConnectionBetweenStations(startIdx, endIdx);
 
+        // Check if a direct bus connection is found
         if (busConnection != null) {
+            // Get the bus ID associated with the connection
             int busId = getBusIdByConnectionId(busConnection.getId());
+
+            // Get the Bus object based on the bus ID
             Bus bus = getBusById(busId);
 
+            // Check if the Bus object is found
             if (bus != null) {
+                // Print the name of the bus line
                 System.out.println("Bus name: " + bus.getLineName());
             } else {
+                // Print a message if Bus information is not found
                 System.out.println("Bus information not found.");
             }
         } else {
+            // Print a message if no direct bus connection is found
             System.out.println("No direct bus connection.");
         }
     }
@@ -253,22 +285,34 @@ public class FloydWarshall {
      */
     private void printBusesForPath(List<Integer> path) {
         System.out.println("Buses for the route:");
+
+        // Iterate through each segment of the bus route
         for (int i = 0; i < path.size() - 1; i++) {
+            // Get the indices of the current and next stations in the route
             int currentStationIdx = path.get(i);
             int nextStationIdx = path.get(i + 1);
 
+            // Find the bus connection between the current and next stations
             Connection busConnection = findConnectionBetweenStations(currentStationIdx, nextStationIdx);
 
+            // Check if a direct bus connection is found
             if (busConnection != null) {
+                // Get the bus ID associated with the connection
                 int busId = getBusIdByConnectionId(busConnection.getId());
+
+                // Get the Bus object based on the bus ID
                 Bus bus = getBusById(busId);
 
+                // Check if the Bus object is found
                 if (bus != null) {
+                    // Print the name of the bus line for the current segment
                     System.out.println("Bus name: " + bus.getLineName());
                 } else {
+                    // Print a message if Bus information is not found for the current segment
                     System.out.println("Bus information not found.");
                 }
             } else {
+                // Print a message if no direct bus connection is found for the current segment
                 System.out.println("No direct bus connection between the stations.");
             }
         }
@@ -281,11 +325,16 @@ public class FloydWarshall {
      * @return Bus ID or -1 if not found.
      */
     private int getBusIdByConnectionId(int connectionId) {
+        // Iterate through the list of buses
         for (Bus bus : buses) {
+            // Check if the bus ID matches the given connection ID
             if (bus.getId() == connectionId) {
+                // Return the bus ID if a match is found
                 return bus.getId();
             }
         }
+
+        // Return -1 if no matching bus ID is found
         return -1;
     }
 
@@ -297,11 +346,16 @@ public class FloydWarshall {
      * @return Connection object or null if not found.
      */
     private Connection findConnectionBetweenStations(int startIdx, int endIdx) {
+        // Iterate through the list of connections
         for (Connection connection : connections) {
+            // Check if the connection's origin and destination station indices match the provided indices
             if (connection.getOriginStationId() - 1 == startIdx && connection.getDestinationStationId() - 1 == endIdx) {
+                // Return the connection if a match is found
                 return connection;
             }
         }
+
+        // Return null if no matching connection is found
         return null;
     }
 
@@ -313,11 +367,16 @@ public class FloydWarshall {
      * @return List of indirect paths between the stations.
      */
     private List<List<Integer>> findIndirectPaths(int startIdx, int endIdx) {
+        // Create a list to store indirect paths
         List<List<Integer>> indirectPaths = new ArrayList<>();
+
+        // Create a boolean array to keep track of visited stations
         boolean[] visited = new boolean[stations.size()];
 
+        // Call the recursive method to find indirect paths
         findIndirectPathsRecursive(startIdx, endIdx, new ArrayList<>(), visited, indirectPaths);
 
+        // Return the list of indirect paths
         return indirectPaths;
     }
 
@@ -332,19 +391,25 @@ public class FloydWarshall {
      */
     private void findIndirectPathsRecursive(int currentIdx, int endIdx, List<Integer> currentPath,
                                             boolean[] visited, List<List<Integer>> indirectPaths) {
+        // Mark the current station as visited and add it to the current path
         visited[currentIdx] = true;
         currentPath.add(currentIdx);
 
+        // If the destination station is reached, add the current path to the list of indirect paths
         if (currentIdx == endIdx) {
             indirectPaths.add(new ArrayList<>(currentPath));
         } else {
+            // Explore neighbors for possible indirect paths
             for (int neighborIdx = 0; neighborIdx < stations.size(); neighborIdx++) {
+                // Check if the neighbor is not visited and there is a connection to it
                 if (!visited[neighborIdx] && distance[currentIdx][neighborIdx] != INF) {
+                    // Recursively explore the path to the neighbor
                     findIndirectPathsRecursive(neighborIdx, endIdx, currentPath, visited, indirectPaths);
                 }
             }
         }
 
+        // Backtrack: mark the current station as not visited and remove it from the current path
         visited[currentIdx] = false;
         currentPath.remove(currentPath.size() - 1);
     }
@@ -356,12 +421,19 @@ public class FloydWarshall {
      * @return Total distance of the path.
      */
     private double calculateTotalDistance(List<Integer> path) {
+        // Initialize the total distance
         double totalDistance = 0;
+
+        // Iterate through the path to sum up the distances between consecutive stations
         for (int i = 0; i < path.size() - 1; i++) {
             int currentIdx = path.get(i);
             int nextIdx = path.get(i + 1);
+
+            // Add the distance between the current station and the next station to the total distance
             totalDistance += distance[currentIdx][nextIdx];
         }
+
+        // Return the calculated total distance for the given path
         return totalDistance;
     }
 
@@ -373,19 +445,31 @@ public class FloydWarshall {
      * @return List of station indices representing the path.
      */
     private List<Integer> reconstructPath(int startIdx, int endIdx) {
+        // Initialize a list to store the reconstructed path
         List<Integer> path = new ArrayList<>();
+
+        // Set the current station index to the starting index
         int current = startIdx;
 
+        // Iterate until reaching the destination station
         while (current != endIdx) {
+            // Check for invalid or disconnected path
             if (current == -1) {
                 System.out.println("No path between the stations.");
                 return null;
             }
+
+            // Add the current station index to the path
             path.add(current);
+
+            // Move to the next station index using the next matrix
             current = next[current][endIdx];
         }
 
+        // Add the destination station index to the path
         path.add(endIdx);
+
+        // Return the reconstructed path
         return path;
     }
 }
