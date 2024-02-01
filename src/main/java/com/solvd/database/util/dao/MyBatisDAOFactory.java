@@ -2,6 +2,7 @@ package com.solvd.database.util.dao;
 
 import com.solvd.database.dao.IBaseDao;
 import com.solvd.database.dao.mybatis.BusDAOImpl;
+import com.solvd.database.dao.mybatis.ConnectionDAOImpl;
 import com.solvd.database.dao.mybatis.StationDAOImpl;
 import com.solvd.database.util.abstractFactory.AbstractFactory;
 import com.solvd.enums.DAOType;
@@ -26,6 +27,8 @@ public class MyBatisDAOFactory extends AbstractFactory {
                 return new BusDAOImpl();
             case STATION:
                 return new StationDAOImpl();
+            case CONNECITION:
+                return new ConnectionDAOImpl();
             default:
                 logger.error("Unexpected value: " + dao);
                 return null;

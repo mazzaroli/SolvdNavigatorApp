@@ -1,3 +1,40 @@
-<mapper xmlns="http://mybatis.org/schema/mybatis-mapper">
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.solvd.database.dao.IConnectionDAO">
 
+    <!-- Mapping the result to the Connection class -->
+    <resultMap id="ConnectionResultMap" type="com.solvd.database.model.Connection">
+        <id property="id" column="id"/>
+        <result property="originStationId" column="origin_station_id"/>
+        <result property="destinationStationId" column="destination_station_id"/>
+    </resultMap>
+
+    <!-- Query to retrieve all connections -->
+    <select id="getAllConnection" resultMap="ConnectionResultMap">
+        SELECT * FROM Connections
+    </select>
+
+    <!-- Query to retrieve a connection by ID -->
+    <select id="getEntityById" parameterType="int" resultMap="ConnectionResultMap">
+        SELECT * FROM Connections WHERE id = #{id}
+    </select>
+
+    <!-- Query to insert a new connection -->
+    <insert id="insertConnection" parameterType="com.solvd.database.model.Connection">
+        INSERT INTO Connections (origin_station_id, destination_station_id)
+        VALUES (#{originStationId}, #{destinationStationId})
+    </insert>
+
+    <!-- Query to update a connection -->
+    <update id="updateConnection" parameterType="com.solvd.database.model.Connection">
+        UPDATE Connections
+        SET origin_station_id = #{originStationId},
+        destination_station_id = #{destinationStationId}
+        WHERE id = #{id}
+    </update>
+
+    <!-- Query to delete a connection by ID -->
+    <delete id="deleteConnection" parameterType="int">
+        DELETE FROM Connections WHERE id = #{id}
+    </delete>
 </mapper>
