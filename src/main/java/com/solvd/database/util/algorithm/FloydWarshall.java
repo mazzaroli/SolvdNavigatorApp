@@ -1,11 +1,13 @@
 package com.solvd.database.util.algorithm;
 
+import com.solvd.database.model.Bus;
 import com.solvd.database.model.Connection;
 import com.solvd.database.model.Station;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Scanner;
 
 /**
  * Class that implements the Floyd-Warshall algorithm to find the shortest path
@@ -17,19 +19,46 @@ public class FloydWarshall {
 
     private double[][] distance;
     private int[][] next;
-    private List<Station> stations;
-    private List<Connection> connections;
+    private final List<Station> stations;
+    private final List<Connection> connections;
+    private final List<Bus> buses;
 
     /**
-     * Constructor that initializes the class with the given list of stations and connections.
+     * Constructor that initializes the class with the given list of stations, connections, and buses.
      *
      * @param stations      List of available stations.
      * @param connections   List of connections between stations.
+     * @param buses         List of buses.
      */
-    public FloydWarshall(List<Station> stations, List<Connection> connections) {
+    public FloydWarshall(List<Station> stations, List<Connection> connections, List<Bus> buses) {
         this.stations = stations;
         this.connections = connections;
+        this.buses = buses; // Initialize the buses field
         initializeGraph();
+    }
+
+    /**
+     * Executes the Floyd-Warshall algorithm to find the shortest path between
+     * two stations and calculates the total distance.
+     *
+     * @param startId Identifier of the starting station.
+     * @param endId   Identifier of the destination station.
+     */
+    public void run(int startId, int endId) {
+        int startIdx = startId - 1;
+        int endIdx = endId - 1;
+
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Traveling by car or bus? (car/bus): ");
+        String travelMode = scanner.next();
+
+        if ("car".equalsIgnoreCase(travelMode)) {
+            runForCar(startIdx, endIdx);
+        } else if ("bus".equalsIgnoreCase(travelMode)) {
+            runForBus(startIdx, endIdx);
+        } else {
+            System.out.println("Invalid option.");
+        }
     }
 
     /**
@@ -90,24 +119,34 @@ public class FloydWarshall {
     }
 
     /**
-     * Executes the Floyd-Warshall algorithm to find the shortest path between
-     * two stations and calculates the total distance.
+     * Gets the bus ID based on the connection ID.
      *
-     * @param startId Identifier of the starting station.
-     * @param endId   Identifier of the destination station.
+     * @param busId ID of the connection.
+     * @return Bus ID or -1 if not found.
      */
-    public void run(int startId, int endId) {
-        int startIdx = startId - 1;
-        int endIdx = endId - 1;
+    private Bus getBusById(int busId) {
+        for (Bus bus : buses) {
+            if (bus.getId() == busId) {
+                return bus;
+            }
+        }
+        return null;
+    }
 
+    /**
+     * Runs the algorithm for car travel and prints the results.
+     *
+     * @param startIdx Index of the starting station.
+     * @param endIdx   Index of the destination station.
+     */
+    private void runForCar(int startIdx, int endIdx) {
         if (distance[startIdx][endIdx] == INF) {
             System.out.println("No direct connection between the stations.");
 
-            // Find indirect paths
             List<List<Integer>> indirectPaths = findIndirectPaths(startIdx, endIdx);
 
             if (indirectPaths.isEmpty()) {
-                System.out.println("No available paths.");
+                System.out.println("No available routes.");
                 return;
             }
 
@@ -123,7 +162,7 @@ public class FloydWarshall {
                     for (int stationIdx : path) {
                         System.out.println("- " + stations.get(stationIdx).getName());
                     }
-                    System.out.println("Total Distance: " + totalDistance);
+                    System.out.println("Total distance: " + totalDistance);
                     System.out.println();
                     count++;
                 } else {
@@ -137,19 +176,140 @@ public class FloydWarshall {
 
             System.out.println("Shortest path from " + stations.get(startIdx).getName() +
                     " to " + stations.get(endIdx).getName() + ":");
+            assert path != null;
             for (int stationIdx : path) {
                 System.out.println("- " + stations.get(stationIdx).getName());
             }
 
-            System.out.println("Total Distance: " + totalDistance);
+            System.out.println("Total distance: " + totalDistance);
         }
+    }
+
+    /**
+     * Runs the algorithm for bus travel and prints the results.
+     *
+     * @param startIdx Index of the starting station.
+     * @param endIdx   Index of the destination station.
+     */
+    public void runForBus(int startIdx, int endIdx) {
+        // Check for a direct bus connection
+        double busDistance = distance[startIdx][endIdx];
+        if (busDistance != INF) {
+            System.out.println("You can take a direct bus to reach your destination.");
+            System.out.println("Total bus distance: " + busDistance);
+            printBusesForConnection(startIdx, endIdx);
+        } else {
+            // Find indirect routes
+            List<List<Integer>> indirectPaths = findIndirectPaths(startIdx, endIdx);
+
+            if (indirectPaths.isEmpty()) {
+                System.out.println("No available bus routes.");
+                return;
+            }
+
+            // Sort indirect routes by distance
+            indirectPaths.sort(Comparator.comparingDouble(this::calculateTotalDistance));
+
+            // Show only the shortest bus route
+            List<Integer> shortestPath = indirectPaths.get(0);
+            double totalDistance = calculateTotalDistance(shortestPath);
+
+            System.out.println("Shortest bus route:");
+            for (int stationIdx : shortestPath) {
+                System.out.println("- " + stations.get(stationIdx).getName());
+            }
+            System.out.println("Total bus distance: " + totalDistance);
+            printBusesForPath(shortestPath);
+        }
+    }
+
+    /**
+     * Prints the bus information for a direct connection.
+     *
+     * @param startIdx Index of the starting station.
+     * @param endIdx   Index of the destination station.
+     */
+    private void printBusesForConnection(int startIdx, int endIdx) {
+        Connection busConnection = findConnectionBetweenStations(startIdx, endIdx);
+
+        if (busConnection != null) {
+            int busId = getBusIdByConnectionId(busConnection.getId());
+            Bus bus = getBusById(busId);
+
+            if (bus != null) {
+                System.out.println("Bus name: " + bus.getLineName());
+            } else {
+                System.out.println("Bus information not found.");
+            }
+        } else {
+            System.out.println("No direct bus connection.");
+        }
+    }
+
+    /**
+     * Prints the bus information for a bus route.
+     *
+     * @param path List of station indices representing the bus route.
+     */
+    private void printBusesForPath(List<Integer> path) {
+        System.out.println("Buses for the route:");
+        for (int i = 0; i < path.size() - 1; i++) {
+            int currentStationIdx = path.get(i);
+            int nextStationIdx = path.get(i + 1);
+
+            Connection busConnection = findConnectionBetweenStations(currentStationIdx, nextStationIdx);
+
+            if (busConnection != null) {
+                int busId = getBusIdByConnectionId(busConnection.getId());
+                Bus bus = getBusById(busId);
+
+                if (bus != null) {
+                    System.out.println("Bus name: " + bus.getLineName());
+                } else {
+                    System.out.println("Bus information not found.");
+                }
+            } else {
+                System.out.println("No direct bus connection between the stations.");
+            }
+        }
+    }
+
+    /**
+     * Gets the bus ID based on the connection ID.
+     *
+     * @param connectionId ID of the connection.
+     * @return Bus ID or -1 if not found.
+     */
+    private int getBusIdByConnectionId(int connectionId) {
+        for (Bus bus : buses) {
+            if (bus.getId() == connectionId) {
+                return bus.getId();
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * Finds a connection between two stations.
+     *
+     * @param startIdx Index of the starting station.
+     * @param endIdx   Index of the destination station.
+     * @return Connection object or null if not found.
+     */
+    private Connection findConnectionBetweenStations(int startIdx, int endIdx) {
+        for (Connection connection : connections) {
+            if (connection.getOriginStationId() - 1 == startIdx && connection.getDestinationStationId() - 1 == endIdx) {
+                return connection;
+            }
+        }
+        return null;
     }
 
     /**
      * Finds indirect paths between two stations using recursion.
      *
-     * @param startIdx       Index of the starting station.
-     * @param endIdx         Index of the destination station.
+     * @param startIdx Index of the starting station.
+     * @param endIdx   Index of the destination station.
      * @return List of indirect paths between the stations.
      */
     private List<List<Integer>> findIndirectPaths(int startIdx, int endIdx) {
